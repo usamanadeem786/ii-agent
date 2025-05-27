@@ -37,7 +37,6 @@ from ii_agent.core.event import RealtimeEvent, EventType
 from ii_agent.db.models import Event
 from ii_agent.utils.constants import DEFAULT_MODEL, UPLOAD_FOLDER_NAME
 from utils import parse_common_args, create_workspace_manager_for_connection
-from ii_agent.agents.anthropic_fc import AnthropicFC
 from ii_agent.agents.base import BaseAgent
 from ii_agent.llm.base import LLMClient
 from ii_agent.utils import WorkspaceManager
@@ -121,8 +120,8 @@ async def websocket_endpoint(websocket: WebSocket):
                 if msg_type == "init_agent":
                     # Initialize LLM client
                     client = get_client(
-                        "anthropic-direct",
-                        model_name=DEFAULT_MODEL,
+                        "openai",
+                        model_name=os.getenv("MODEL_NAME", "gpt-4-turbo-preview"),
                         use_caching=False,
                         project_id=global_args.project_id,
                         region=global_args.region,
@@ -324,8 +323,8 @@ async def websocket_endpoint(websocket: WebSocket):
                     files = content.get("files", [])
                     # Initialize LLM client
                     client = get_client(
-                        "anthropic-direct",
-                        model_name=DEFAULT_MODEL,
+                        "openai",
+                        model_name=os.getenv("MODEL_NAME", "gpt-4-turbo-preview"),
                         use_caching=False,
                         project_id=global_args.project_id,
                         region=global_args.region,
@@ -523,7 +522,7 @@ def create_agent_for_connection(
         ask_user_permission=global_args.needs_permission,
         tool_args=tool_args,
     )
-    agent = AnthropicFC(
+    agent = BaseAgent(
         system_prompt=SYSTEM_PROMPT_WITH_SEQ_THINKING if tool_args.get("sequential_thinking", False) else SYSTEM_PROMPT,
         client=client,
         tools=tools,
