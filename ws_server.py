@@ -120,7 +120,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 if msg_type == "init_agent":
                     # Initialize LLM client
                     client = get_client(
-                        "openai",
+                        "openai-direct",
                         model_name=os.getenv("MODEL_NAME", "gpt-4-turbo-preview"),
                         use_caching=False,
                         project_id=global_args.project_id,
